@@ -1,0 +1,442 @@
+<?php
+
+/**
+ * Copyright 2010 - 2019, Cake Development Corporation (https://www.cakedc.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright 2010 - 2018, Cake Development Corporation (https://www.cakedc.com)
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
+use Cake\Core\Configure;
+use Cake\Log\Log;
+use Cake\Routing\Router;
+use Laminas\Diactoros\Uri;
+
+$allowedRedirectHosts = [
+    'localhost',
+];
+if (Configure::read('App.fullBaseUrl')) {
+    try {
+        $uri = new Uri(Configure::read('App.fullBaseUrl'));
+        $fullBaseHost = $uri->getHost();
+        if ($fullBaseHost) {
+            $allowedRedirectHosts[] = $fullBaseHost;
+        }
+    } catch (Exception $ex) {
+        Log::warning('Invalid host from App.fullBasedUrl in CakeDC/Users configuration: ' . $ex->getMessage());
+    }
+}
+
+$config = [
+    'Users' => [
+        // Table used to manage users (BusinessUsers table copies email into username)
+        'table' => 'BusinessUsers.Users',
+        // Controller used to manage users plugin features & actions
+        'controller' => 'CakeDC/Users.Users',
+        // Password Hasher
+        'passwordHasher' => '\Cake\Auth\DefaultPasswordHasher',
+        'middlewareQueueLoader' => \CakeDC\Users\Loader\MiddlewareQueueLoader::class,
+        // token expiration, 1 hour
+        'Token' => ['expiration' => 3600],
+        'Email' => [
+            // determines if the user should include email
+            'required' => true,
+            // determines if registration workflow includes email validation
+            'validate' => true,
+        ],
+        'Username' => [
+            // username is not collected in UI; email is the public identity
+            'required' => false,
+            // copy email into username on marshal/save (unique + login still work)
+            'useEmail' => true,
+        ],
+        'Login' => [
+            'flashMessage' => false, // bool
+            'updateLastLogin' => true,
+            'lastLoginField' => 'last_login',
+        ],
+        'PasswordReset' => [
+            // A list of fields to use when looking up a user for password reset.
+            'findWith' => ['email'],
+        ],
+        'Registration' => [
+            // determines if the register is enabled
+            'active' => true,
+            // determines if the reCaptcha is enabled for registration
+            'reCaptcha' => true,
+            // allow a logged in user to access the registration form
+            'allowLoggedIn' => false,
+            //ensure user is active (confirmed email) to reset his password
+            'ensureActive' => false,
+            // default role name used in registration
+            'defaultRole' => 'user',
+            // show verbose error to users
+            'showVerboseError' => false,
+        ],
+        'reCaptcha' => [
+            // reCaptcha key goes here
+            'key' => null,
+            // reCaptcha secret
+            'secret' => null,
+            // reCaptcha version. keep 2 for backward compatibility
+            'version' => 2,
+            // use reCaptcha in registration
+            'registration' => false,
+            // use reCaptcha in login, valid values are false, true
+            'login' => false,
+        ],
+        'passwordMeter' => [
+            //enable or disable password meter
+            'enabled' => true,
+            //int value from 1 to 4 (25%,50%,75%,100%). Defaults to 3
+            'requiredScore' => 1,
+            //Messages for each password level (0%,25%,50%,75%,100%)
+            'messagesList' => [
+                __d('cake_d_c/users', 'Empty password'),
+                __d('cake_d_c/users', 'Too simple'),
+                __d('cake_d_c/users', 'Simple'),
+                __d('cake_d_c/users', 'That\'s OK'),
+                __d('cake_d_c/users', 'Great password!')
+            ],
+            //Password min length
+            'pswMinLength' => 8,
+            //shows message for password score
+            'showMessage' => true,
+        ],
+        'Tos' => [
+            // determines if the user should include tos accepted
+            'required' => true,
+        ],
+        'Social' => [
+            // enable social login
+            'login' => false,
+            // enable social account validation for first social logins into existing accounts
+            'validateSocialAccount' => true,
+        ],
+        'Profile' => [
+            // Allow view other users profiles
+            'viewOthers' => true,
+            'contain' => [],
+        ],
+        'Key' => [
+            'Session' => [
+                // session key to store the social auth data
+                'social' => 'Users.social',
+                // userId key used in reset password workflow
+                'resetPasswordUserId' => 'Users.resetPasswordUserId',
+            ],
+            // form key to store the social auth data
+            'Form' => [
+                'social' => 'social',
+            ],
+            'Data' => [
+                // data key to store the users email
+                'email' => 'email',
+                // data key to store email coming from social networks
+                'socialEmail' => 'info.email',
+                // data key to check if the remember me option is enabled
+                'rememberMe' => 'remember_me',
+            ],
+        ],
+        // Avatar placeholder
+        'Avatar' => ['placeholder' => 'CakeDC/Users.avatar_placeholder.png'],
+        'RememberMe' => [
+            // configure Remember Me component
+            'active' => true,
+            'checked' => true,
+            'Cookie' => [
+                'name' => 'remember_me',
+                'Config' => [
+                    'expires' => '+1 month',
+                    'httponly' => true,
+                ],
+            ],
+        ],
+        'Superuser' => ['allowedToChangePasswords' => true], // able to reset any users password
+        // list of valid hosts to allow redirects after valid login via the `redirect` query param
+        'AllowedRedirectHosts' => $allowedRedirectHosts,
+    ],
+    'OneTimePasswordAuthenticator' => [
+        'checker' => \CakeDC\Auth\Authentication\DefaultOneTimePasswordAuthenticationChecker::class,
+        'login' => false,
+        'issuer' => null,
+        // The number of digits the resulting codes will be
+        'digits' => 6,
+        // The number of seconds a code will be valid
+        'period' => 30,
+        // The algorithm used
+        'algorithm' => enum_exists(\RobThree\Auth\Algorithm::class) ? \RobThree\Auth\Algorithm::Sha1 : null,
+        // QR-code provider (more on this later)
+        'qrcodeprovider' => class_exists('\RobThree\Auth\Providers\Qr\EndroidQrCodeProvider') ? (new \RobThree\Auth\Providers\Qr\EndroidQrCodeProvider()) : null,
+        // Random Number Generator provider (more on this later)
+        'rngprovider' => null,
+    ],
+    'Webauthn2fa' => [
+        'enabled' => false,
+        'appName' => null, //App must set a valid name here
+        'id' => null, //default value is the current domain
+        'checker' => \CakeDC\Auth\Authentication\DefaultWebauthn2FAuthenticationChecker::class,
+    ],
+    'TwoFactorProcessors' => [
+        \CakeDC\Auth\Authentication\TwoFactorProcessor\Webauthn2faProcessor::class,
+        \CakeDC\Auth\Authentication\TwoFactorProcessor\OneTimePasswordProcessor::class,
+    ],
+    /**
+     * @see  https://github.com/CakeDC/users/blob/14.next-cake5/Docs/Documentation/MagicLink.md
+     */
+    'OneTimeLogin' => [
+        'enabled' => true,
+        'thresholdTimeout' => 60,
+        'tokenLifeTime' => 600,
+        'DeliveryHandlers' => [
+            'Email' => [
+                'className' => \CakeDC\Users\Model\Behavior\OneTimeDelivery\EmailDelivery::class
+            ]
+        ]
+    ],
+    // default configuration used to auto-load the Auth Component, override to change the way Auth works
+    'Auth' => [
+        'Authentication' => [
+            'serviceLoader' => \CakeDC\Users\Loader\AuthenticationServiceLoader::class,
+        ],
+        'AuthenticationComponent' => [
+            'load' => true,
+            'loginRedirect' => '/',
+            'requireIdentity' => false,
+        ],
+        'Authenticators' => [
+            'Session' => [
+                'className' => 'Authentication.Session',
+                'skipTwoFactorVerify' => true,
+                'sessionKey' => 'Auth',
+            ],
+            'Form' => [
+                'className' => 'CakeDC/Auth.Form',
+                'urlChecker' => 'Authentication.CakeRouter',
+                'fields' => [
+                    'username' => 'email',
+                    'password' => 'password',
+                ],
+                'identifier' => [
+                    'Authentication.Password' => [
+                        'fields' => [
+                            'username' => ['email', 'username'],
+                            'password' => 'password',
+                        ],
+                        'resolver' => [
+                            'className' => 'Authentication.Orm',
+                            'userModel' => 'Users',
+                            'finder' => 'active',
+                        ],
+                    ],
+                ],
+            ],
+            'Token' => [
+                'className' => 'Authentication.Token',
+                'skipTwoFactorVerify' => true,
+                'header' => null,
+                'queryParam' => 'api_key',
+                'tokenPrefix' => null,
+            ],
+            'Cookie' => [
+                'className' => 'CakeDC/Auth.Cookie',
+                'skipTwoFactorVerify' => true,
+                'rememberMeField' => 'remember_me',
+                'loginUrl' => [
+                    '/users/login',
+                ],
+                'identifier' => [
+                    'Authentication.Password' => [
+                        'fields' => [
+                            'username' => ['email', 'username'],
+                            'password' => 'password',
+                        ],
+                        'resolver' => [
+                            'className' => 'Authentication.Orm',
+                            'userModel' => 'Users',
+                            'finder' => 'active',
+                        ],
+                    ],
+                ],
+                'cookie' => [
+                    'name' => 'remember_me',
+                    'expires' => '+1 month',
+                    'httponly' => true,
+                ],
+                'urlChecker' => 'Authentication.CakeRouter',
+            ],
+            'Social' => [
+                'className' => 'CakeDC/Users.Social',
+                'skipTwoFactorVerify' => true,
+            ],
+            'SocialPendingEmail' => [
+                'className' => 'CakeDC/Users.SocialPendingEmail',
+                'skipTwoFactorVerify' => true,
+            ],
+            'OneTimeToken' => [
+                'className' => 'CakeDC/Auth.OneTimeToken',
+                'skipTwoFactorVerify' => true,
+                'loginUrl' => [
+                    '/login',
+                ],
+            ]
+        ],
+        'Identifiers' => [
+            'Password' => [
+                'className' => 'Authentication.Password',
+                'fields' => [
+                    'username' => ['email', 'username'],
+                    'password' => 'password',
+                ],
+                'resolver' => [
+                    'className' => 'Authentication.Orm',
+                    'finder' => 'active',
+                ],
+            ],
+            'Social' => [
+                'className' => 'CakeDC/Users.Social',
+                'authFinder' => 'active',
+            ],
+            'Token' => [
+                'className' => 'Authentication.Token',
+                'tokenField' => 'api_token',
+                'resolver' => [
+                    'className' => 'Authentication.Orm',
+                    'finder' => 'active',
+                ],
+            ],
+        ],
+        'Authorization' => [
+            'enable' => true,
+            'serviceLoader' => \CakeDC\Users\Loader\AuthorizationServiceLoader::class,
+        ],
+        'AuthorizationMiddleware' => [
+            'unauthorizedHandler' => [
+                'className' => 'CakeDC/Users.DefaultRedirect',
+            ],
+        ],
+        'AuthorizationComponent' => [
+            'enabled' => true,
+        ],
+        'RbacPolicy' => [
+            'adapter' => [
+                'autoload_config' => ['BusinessUsers.permissions', 'permissions'],
+            ],
+        ],
+        'PasswordRehash' => [
+            'identifiers' => ['Password'],
+        ],
+    ],
+    'OAuth' => [
+        'providers' => [
+            'facebook' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'League\OAuth2\Client\Provider\Facebook',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Facebook',
+                'skipSocialAccountValidation' => false,
+                'authParams' => ['scope' => ['public_profile', 'email', 'user_birthday', 'user_gender', 'user_link']],
+                'options' => [
+                    'graphApiVersion' => 'v2.8', //bio field was deprecated on >= v2.8
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/facebook',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/facebook',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/facebook',
+                ],
+            ],
+            'twitter' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth1Service',
+                'className' => 'League\OAuth1\Client\Server\Twitter',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Twitter',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/twitter',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/twitter',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/twitter',
+                ],
+            ],
+            'linkedIn' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'League\OAuth2\Client\Provider\LinkedIn',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\LinkedIn',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/linkedIn',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/linkedIn',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/linkedIn',
+                ],
+            ],
+            'instagram' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'League\OAuth2\Client\Provider\Instagram',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Instagram',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/instagram',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/instagram',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/instagram',
+                ],
+            ],
+            'google' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'League\OAuth2\Client\Provider\Google',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Google',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'userFields' => ['url', 'aboutMe'],
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/google',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/google',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/google',
+                ],
+            ],
+            'amazon' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'Luchianenco\OAuth2\Client\Provider\Amazon',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Amazon',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/amazon',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/amazon',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/amazon',
+                ],
+            ],
+            'cognito' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'CakeDC\OAuth2\Client\Provider\Cognito',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Cognito',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/cognito',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/cognito',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/cognito',
+                    'scope' => 'email openid',
+                ],
+            ],
+            'azure' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'TheNetworg\OAuth2\Client\Provider\Azure',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Azure',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/azure',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/azure',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/azure',
+                ],
+            ],
+            'github' => [
+                'service' => 'CakeDC\Auth\Social\Service\OAuth2Service',
+                'className' => 'League\OAuth2\Client\Provider\Github',
+                'mapper' => 'CakeDC\Auth\Social\Mapper\Github',
+                'skipSocialAccountValidation' => false,
+                'options' => [
+                    'redirectUri' => Router::fullBaseUrl() . '/auth/github',
+                    'linkSocialUri' => Router::fullBaseUrl() . '/link-social/github',
+                    'callbackLinkSocialUri' => Router::fullBaseUrl() . '/callback-link-social/github',
+                ],
+            ],
+        ],
+    ],
+];
+
+return $config;

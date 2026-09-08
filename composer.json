@@ -1,0 +1,40 @@
+{
+    "name": "yeriepiscesa/cakephp-business-users",
+    "description": "Multi-tenant business access control layer for CakePHP on top of CakeDC/Users",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "keywords": [
+        "cakephp",
+        "multi-tenant",
+        "rbac",
+        "business-users",
+        "authorization"
+    ],
+    "require": {
+        "php": ">=8.5",
+        "cakephp/cakephp": "^5.3",
+        "cakephp/migrations": "^5.2",
+        "cakedc/users": "^16.0",
+        "dereuromark/cakephp-audit-stash": "^2.0",
+        "friendsofcake/crud": "^7.2",
+        "yeriepiscesa/cakephp-crud-connect": "@dev",
+        "friendsofcake/search": "^7.7",
+        "halaxa/json-machine": "^1.2"
+    },
+    "suggest": {
+        "yeriepiscesa/cakephp-uikit": "Default admin theme and layout (configure via BusinessUsers.theme)"
+    },
+    "autoload": {
+        "psr-4": {
+            "BusinessUsers\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BusinessUsers\\Test\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
