@@ -66,20 +66,79 @@ composer require yeriepiscesa/cakephp-uikit
 
 ### 2. Load plugin
 
-Tambahkan ke `config/plugins.php`:
+#### Prinsip umum — hindari duplikasi
+
+Beberapa plugin dependensi **tidak** perlu (dan **tidak boleh**) didaftarkan dua kali di `config/plugins.php`. BusinessUsers mem-load `CakeDC/Users` otomatis di `BusinessUsersPlugin::bootstrap()` jika plugin tersebut belum terdaftar.
+
+| Plugin | Siapa yang load | Daftar di `config/plugins.php`? |
+|---|---|---|
+| `CakeDC/Users` | **BusinessUsers** (otomatis) | **Jangan** — kecuali BusinessUsers tidak dipakai |
+| `Crud`, `Search`, `AuditStash`, `Migrations` | Host application | **Ya** |
+| `CrudConnect` | Host application | **Ya** — admin CRUD extends base controller plugin ini |
+| `Uikit` | Host application | **Ya** (disarankan) |
+| `BusinessUsers` | Host application | **Ya** |
+
+Menambahkan `'CakeDC/Users' => []` **dan** `'BusinessUsers' => []` bersamaan dapat menyebabkan plugin ter-bootstrap dua kali atau konfigurasi `Users.config` bentrok.
+
+#### Contoh `config/plugins.php` — BusinessUsers saja
 
 ```php
-'Crud' => [],
-'Search' => [],
-'Migrations' => ['onlyCli' => true],
-'AuditStash' => [],
-'BusinessUsers' => [],
-'Uikit' => [], // disarankan untuk layout admin
+return [
+    'Migrations' => ['onlyCli' => true],
+    'Crud' => [],
+    'Search' => [],
+    'AuditStash' => [],
+    'CrudConnect' => [],
+    'Uikit' => [],           // disarankan untuk layout admin
+    'BusinessUsers' => [],
+];
 ```
 
-`BusinessUsers` mem-load `CakeDC/Users` secara otomatis di `BusinessUsersPlugin::bootstrap()`. **Jangan** tambahkan `CakeDC/Users` ke `config/plugins.php` secara terpisah.
+#### Contoh `config/plugins.php` — BusinessUsers + FileManager + Uikit
 
-`BusinessUsers` harus di-load **setelah** `Crud`, `Search`, dan `AuditStash`.
+Gunakan konfigurasi ini bila project memakai keduanya. Perhatikan: **`CakeDC/Users` tidak ada** di daftar — BusinessUsers yang mem-load-nya.
+
+```php
+return [
+    'Migrations' => ['onlyCli' => true],
+    'Crud' => [],
+    'Search' => [],
+    'Josegonzalez/Upload' => [],
+    'AuditStash' => [],
+    'CrudConnect' => [],
+    'Uikit' => [],
+    'BusinessUsers' => [],   // mem-load CakeDC/Users otomatis
+    'FileManager' => [],    // load setelah BusinessUsers
+];
+```
+
+#### Urutan load
+
+Urutan entri di array menentukan urutan bootstrap. Ikuti aturan ini:
+
+1. `Crud`, `Search` — dasar CRUD dan filter
+2. `AuditStash`, `Migrations` — audit log dan migration CLI
+3. `CrudConnect` — base controller admin/API
+4. `Josegonzalez/Upload` — hanya jika memakai FileManager
+5. `Uikit` — theme/layout admin
+6. `BusinessUsers` — identitas, RBAC, multi-tenant (mem-load `CakeDC/Users`)
+7. `FileManager` — **setelah** BusinessUsers agar port `TenantUserRepositoryInterface` sudah terdaftar saat wiring DI FileManager
+8. Plugin domain aplikasi (mis. `FlightBooking`, `Cms`)
+
+#### Anti-pattern (hindari)
+
+```php
+// ❌ JANGAN — CakeDC/Users ter-load dua kali saat BusinessUsers bootstrap
+'CakeDC/Users' => [],
+'BusinessUsers' => [],
+'FileManager' => [],
+```
+
+#### Checklist cepat saat menambah plugin lain
+
+- Plugin consumer (mis. FileManager) cukup didaftarkan **setelah** BusinessUsers; jangan ulangi dependensi yang sudah di-load otomatis.
+- Jika plugin lain README-nya menyebut `'CakeDC/Users' => []`, abaikan baris itu bila BusinessUsers sudah dipakai.
+- Pastikan `CrudConnect` terdaftar sebelum BusinessUsers/FileManager jika admin CRUD memakai base controller bersama.
 
 ### 3. Prasyarat host
 
@@ -251,8 +310,8 @@ Migration geo (`CreateCountries`, `CreateStates`, `CreateCities`) ikut di `--plu
 
 ## Dependensi dan Integrasi
 
-- Identity utama tetap dari `CakeDC/Users` melalui `users.id` bertipe UUID.
-- Plugin di-load di host lewat `config/plugins.php` (lihat [Instalasi](#instalasi)).
+- Identity utama tetap dari `CakeDC/Users` melalui `users.id` bertipe UUID. Plugin ini mem-load `CakeDC/Users` otomatis — jangan daftarkan ulang di `config/plugins.php` (lihat [Load plugin](#2-load-plugin)).
+- Plugin consumer seperti **FileManager** cukup didaftarkan setelah BusinessUsers; FileManager mendeteksi keberadaan BusinessUsers saat wiring DI, bukan saat bootstrap.
 - Audit model memakai `AuditStash.AuditLog` pada Table classes BusinessUsers.
 - Karena `BusinessUsers` memakai UUID untuk identity relation, host application perlu migration `audit_logs.primary_key` ke string UUID (lihat [Konfigurasi](#konfigurasi)).
 - Endpoint REST API plugin memakai base controller bersama dari plugin `CrudConnect` (`CrudConnect\Controller\ApiController`). Plugin menyediakan wrapper `BusinessUsers\Controller\ApiController` untuk namespacing lokal.
