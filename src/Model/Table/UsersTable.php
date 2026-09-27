@@ -22,6 +22,8 @@ class UsersTable extends CakeDCUsersTable
     {
         parent::initialize($config);
 
+        // The CakeDC entity hashes password assignments via _setPassword().
+        $this->setEntityClass(\CakeDC\Users\Model\Entity\User::class);
         $this->setDisplayField('email');
         $this->isValidateEmail = (bool)Configure::read('Users.Email.required', true);
     }
