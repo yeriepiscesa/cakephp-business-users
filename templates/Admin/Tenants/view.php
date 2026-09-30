@@ -36,7 +36,7 @@ $this->element('Uikit.page_header', [
                         <th><?= __('Status') ?></th>
                         <td>
                             <span class="uk-label <?= $tenant->status === 'active' ? 'uk-label-success' : 'uk-label-warning' ?>">
-                                <?= h($tenant->status) ?>
+                                <?= h(__(ucfirst($tenant->status))) ?>
                             </span>
                         </td>
                     </tr>
@@ -87,7 +87,7 @@ $this->element('Uikit.page_header', [
             <h4 class="uk-card-title"><?= __('Members') ?> <span class="uk-badge"><?= count($tenant->tenant_users) ?></span></h4>
             <ul class="uk-list uk-list-divider">
                 <?php foreach ($tenant->tenant_users as $tu): ?>
-                <li><?= h($tu->user_id) ?> &mdash; <?= h($tu->status) ?></li>
+                <li><?= h($tu->user_id) ?> &mdash; <?= h(__(ucfirst($tu->status))) ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
