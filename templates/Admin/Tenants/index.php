@@ -49,7 +49,7 @@ $this->element('Uikit.page_header', [
                     <td><code><?= h($tenant->code) ?></code></td>
                     <td>
                         <span class="uk-label <?= $tenant->status === 'active' ? 'uk-label-success' : 'uk-label-warning' ?>">
-                            <?= h($tenant->status) ?>
+                            <?= h(__(ucfirst($tenant->status))) ?>
                         </span>
                     </td>
                     <td><?= h($tenant->created) ?></td>

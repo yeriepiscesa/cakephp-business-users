@@ -50,7 +50,7 @@ $this->element('Uikit.page_header', [
                     <td class="uk-text-truncate" style="max-width:180px"><?= h($tenantUser->user_id) ?></td>
                     <td>
                         <span class="uk-label <?= $tenantUser->status === 'active' ? 'uk-label-success' : 'uk-label-warning' ?>">
-                            <?= h($tenantUser->status) ?>
+                            <?= h(__(ucfirst($tenantUser->status))) ?>
                         </span>
                     </td>
                     <td>
