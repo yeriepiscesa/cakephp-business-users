@@ -765,3 +765,7 @@ php -l src/Controller/Api/V1/RolesController.php
 - Main migration: `config/Migrations/20260514090000_CreateBusinessUsersAccessTables.php`
 - Seed: `config/Seeds/BusinessUsersTenantGroupRoleSeed.php`
 - Package Composer: `yeriepiscesa/cakephp-business-users`
+
+## Profile photos
+
+Run `bin/cake migrations migrate --plugin BusinessUsers` after updating the plugin. Signed-in users can upload their own JPEG, PNG, or WebP profile photo (maximum 2 MB and 4000 × 4000 pixels) through `POST /users/avatar`. Photos are stored in `ROOT/data-files/BusinessUsers/avatars`, outside webroot, and served through authenticated `GET /users/avatar/{user-uuid}`. Make that directory writable by the PHP process. The theme may use the URL for member profile, admin profile, sidebar, and user lists.

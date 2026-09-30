@@ -89,6 +89,10 @@ class BusinessUsersPlugin extends BasePlugin
 
         // Public CakeDC/Users routes (dashed URLs)
         $routes->scope('/', function (RouteBuilder $builder): void {
+            $builder->post('/users/avatar', ['controller' => 'ProfilePhotos', 'action' => 'upload', 'plugin' => 'BusinessUsers']);
+            $builder->get('/users/avatar/{id}', ['controller' => 'ProfilePhotos', 'action' => 'view', 'plugin' => 'BusinessUsers'])
+                ->setPatterns(['id' => '[0-9a-fA-F-]{36}'])
+                ->setPass(['id']);
             $builder->connect('/users/register', ['controller' => 'Users', 'action' => 'register', 'plugin' => 'CakeDC/Users']);
             $builder->connect('/users/login', ['controller' => 'Users', 'action' => 'login', 'plugin' => 'CakeDC/Users']);
             $builder->connect('/users/logout', ['controller' => 'Users', 'action' => 'logout', 'plugin' => 'CakeDC/Users']);

@@ -50,6 +50,13 @@ return [
             'bypassAuth' => true,
         ],
         [
+            'role' => '*',
+            'prefix' => false,
+            'plugin' => 'BusinessUsers',
+            'controller' => 'ProfilePhotos',
+            'action' => ['upload', 'view'],
+        ],
+        [
             'role' => \CakeDC\Users\Model\Table\UsersTable::ROLE_ADMIN,
             'prefix' => '*',
             'extension' => '*',
