@@ -38,7 +38,7 @@ $this->assign('title', h($user->email));
             </tr>
             <tr>
                 <th><?= __d('cake_d_c/users', 'Active') ?></th>
-                <td><?= $user->active ? '<span class="uk-badge uk-badge-success">Yes</span>' : '<span class="uk-badge">No</span>' ?></td>
+                <td><?= $user->active ? '<span class="uk-badge uk-badge-success">' . __('Yes') . '</span>' : '<span class="uk-badge">' . __('No') . '</span>' ?></td>
             </tr>
             <tr>
                 <th><?= __d('cake_d_c/users', 'Created') ?></th>
@@ -80,7 +80,7 @@ $this->assign('title', h($user->email));
                     <tr>
                         <td><?= h($socialAccount->provider) ?></td>
                         <td><?= $socialAccount->avatar ? $this->Html->image($socialAccount->avatar, ['width' => 50, 'height' => 50]) : '-' ?></td>
-                        <td><?= $socialAccount->active ? '<span class="uk-badge uk-badge-success">Yes</span>' : '<span class="uk-badge">No</span>' ?></td>
+                        <td><?= $socialAccount->active ? '<span class="uk-badge uk-badge-success">' . __('Yes') . '</span>' : '<span class="uk-badge">' . __('No') . '</span>' ?></td>
                         <td><?= h($socialAccount->created) ?></td>
                         <td><?= h($socialAccount->modified) ?></td>
                     </tr>
