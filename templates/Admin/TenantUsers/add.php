@@ -27,9 +27,9 @@ $this->element('Uikit.page_header', ['title' => __('Add Tenant User')]);
         </div>
         <div class="uk-width-1-2@m">
             <div class="uk-margin">
-                <label class="uk-form-label"><?= __('User ID') ?> <span class="uk-text-muted"><?= __('(UUID)') ?></span></label>
+                <label class="uk-form-label" for="user-id"><?= __('User ID') ?> <span class="uk-text-muted"><?= __('(UUID)') ?></span></label>
                 <div class="uk-form-controls">
-                    <?= $this->Form->control('user_id', ['label' => false, 'class' => 'uk-input', 'required' => true, 'placeholder' => 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx']) ?>
+                    <?= $this->Form->control('user_id', ['type' => 'select', 'label' => false, 'class' => 'uk-select', 'data-tom-select' => '1', 'required' => true, 'empty' => __('-- Select User --')]) ?>
                 </div>
             </div>
         </div>
