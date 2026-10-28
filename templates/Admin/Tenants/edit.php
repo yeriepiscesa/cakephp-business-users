@@ -8,6 +8,10 @@ $this->element('Uikit.page_header', ['title' => __('Edit Tenant')]);
 ?>
 
 <?= $this->Form->create($tenant, ['class' => 'uk-form-stacked']) ?>
+<div class="admin-form-heading">
+    <h3><?= h(__('Tenant information')) ?></h3>
+    <p><?= h(__('Enter the tenant details below.')) ?></p>
+</div>
 <div class="uk-grid-small" uk-grid>
         <div class="uk-width-1-2@m">
             <div class="uk-margin">
