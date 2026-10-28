@@ -162,6 +162,21 @@ Alias `Users` dan `CakeDC/Users.Users` akan resolve ke class plugin sehingga aut
 
 Admin CRUD users (`/admin/users/*`) disediakan oleh `BusinessUsers\Controller\Admin\UsersController` yang extends CakeDC Users. Template default ada di `plugins/BusinessUsers/templates/Admin/Users/`; override theme di `plugins/<Theme>/templates/plugin/BusinessUsers/Admin/Users/` bila diperlukan.
 
+### Login dengan email dan template CakeDC/Users
+
+Form login bawaan CakeDC/Users mengirim field `username`. Karena itu, `Auth.Authenticators.Form.fields.username` memakai nilai `username`, sementara password identifier mencari nilai tersebut pada kolom `email` atau `username`. Pengguna tetap dapat memasukkan alamat email saat login.
+
+Template login kustom sebaiknya membaca `Auth.Authenticators.Form.fields.username` untuk nama input identity, seperti contoh login di plugin Uikit. Mengubah konfigurasi menjadi `email` tanpa mengganti nama input template menyebabkan pesan "Username or password is incorrect" walaupun akun aktif dan password benar.
+
+Theme `BusinessUsers.theme` mengatur halaman admin BusinessUsers. Untuk halaman login CakeDC/Users, pasang contoh template Uikit sebagai override di host (tanpa menimpa kustomisasi yang sudah ada):
+
+```bash
+mkdir -p templates/plugin/CakeDC/Users/Users
+cp -i plugins/Uikit/templates/examples/users/auth/CakeDC/Users/Users/login.php templates/plugin/CakeDC/Users/Users/login.php
+```
+
+Template ini memakai layout `Uikit.landing`. Pastikan plugin `Uikit` dan `CakeVite` aktif serta asset Uikit sudah dibangun ke direktori host yang dikonfigurasi. Contoh halaman autentikasi lain tersedia di folder `templates/examples/users/auth/` plugin Uikit dan dapat dipasang dengan pola yang sama.
+
 ### Konfigurasi CakeDC/Users & RBAC
 
 | File plugin | Isi |

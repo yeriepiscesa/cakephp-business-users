@@ -217,7 +217,8 @@ $config = [
                 'className' => 'CakeDC/Auth.Form',
                 'urlChecker' => 'Authentication.CakeRouter',
                 'fields' => [
-                    'username' => 'email',
+                    // CakeDC's default login template posts username; the identifier below also accepts email.
+                    'username' => 'username',
                     'password' => 'password',
                 ],
                 'identifier' => [
