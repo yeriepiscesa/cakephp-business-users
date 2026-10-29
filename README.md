@@ -243,7 +243,7 @@ bin/cake migrations rollback --plugin BusinessUsers
 ### Seed contoh data (opsional)
 
 ```bash
-bin/cake migrations seed --plugin BusinessUsers --seed BusinessUsersTenantGroupRoleSeed
+bin/cake seeds run BusinessUsersTenantGroupRoleSeed --plugin BusinessUsers
 ```
 
 Seed mengisi contoh tenant, group, dan role untuk skenario provider, agent, dan end-user.
@@ -260,9 +260,9 @@ git lfs pull
 Jalankan seed berurutan:
 
 ```bash
-bin/cake migrations seed --plugin BusinessUsers --seed CountriesSeed
-bin/cake migrations seed --plugin BusinessUsers --seed StatesSeed
-bin/cake migrations seed --plugin BusinessUsers --seed CitiesSeed
+bin/cake seeds run CountriesSeed --plugin BusinessUsers
+bin/cake seeds run StatesSeed --plugin BusinessUsers
+bin/cake seeds run CitiesSeed --plugin BusinessUsers
 ```
 
 Fallback kecil tersedia di `config/data/countries.sql` untuk referensi manual.
@@ -709,7 +709,7 @@ Seed yang tersedia saat ini:
 Menjalankan seed:
 
 ```bash
-bin/cake migrations seed --plugin BusinessUsers --seed BusinessUsersTenantGroupRoleSeed
+bin/cake seeds run BusinessUsersTenantGroupRoleSeed --plugin BusinessUsers
 ```
 
 Seed tersebut mengisi contoh struktur tenant, group, dan role untuk skenario provider, agent, dan end-user.
