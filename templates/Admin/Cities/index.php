@@ -16,7 +16,26 @@ $this->element('Uikit.page_header', [
 ]);
 ?>
 
-<?= $this->element('Uikit.table_controls') ?>
+<?php
+$this->set('devScripts', ['resources/js/admin/lookup-select.js']);
+$this->set('prodScripts', ['admin/lookup-select.js']);
+$selectedCountries = $selectedCountries ?? [];
+$selectedStates = $selectedStates ?? [];
+echo $this->element('Uikit.table_controls', ['filters' => [
+    'country_id' => [
+        'type' => 'select', 'label' => __('Country'), 'multiple' => true, 'class' => 'uk-select',
+        'options' => $selectedCountries, 'value' => array_keys($selectedCountries), 'data-placeholder' => __('Search countries'),
+        'data-lookup-url' => $this->Url->build(['plugin' => 'BusinessUsers', 'prefix' => 'Admin', 'controller' => 'Countries', 'action' => 'lookup']),
+        'data-label-fields' => 'nicename,iso', 'data-search-field' => 'nicename', 'data-clearable' => 'true',
+    ],
+    'state_id' => [
+        'type' => 'select', 'label' => __('State'), 'multiple' => true, 'class' => 'uk-select',
+        'options' => $selectedStates, 'value' => array_keys($selectedStates), 'data-placeholder' => __('Search states'),
+        'data-lookup-url' => $this->Url->build(['plugin' => 'BusinessUsers', 'prefix' => 'Admin', 'controller' => 'States', 'action' => 'lookup']),
+        'data-label-fields' => 'name,country.nicename,country.iso', 'data-search-field' => 'name', 'data-clearable' => 'true',
+    ],
+]]);
+?>
 
 <div class="datalist-table datalist-freeze-3">
     <div class="uk-overflow-auto">

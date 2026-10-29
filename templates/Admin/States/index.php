@@ -16,7 +16,19 @@ $this->element('Uikit.page_header', [
 ]);
 ?>
 
-<?= $this->element('Uikit.table_controls') ?>
+<?php
+$this->set('devScripts', ['resources/js/admin/lookup-select.js']);
+$this->set('prodScripts', ['admin/lookup-select.js']);
+$selectedCountries = $selectedCountries ?? [];
+echo $this->element('Uikit.table_controls', ['filters' => [
+    'country_id' => [
+        'type' => 'select', 'label' => __('Country'), 'multiple' => true, 'class' => 'uk-select',
+        'options' => $selectedCountries, 'value' => array_keys($selectedCountries), 'data-placeholder' => __('Search countries'),
+        'data-lookup-url' => $this->Url->build(['plugin' => 'BusinessUsers', 'prefix' => 'Admin', 'controller' => 'Countries', 'action' => 'lookup']),
+        'data-label-fields' => 'nicename,iso', 'data-search-field' => 'nicename', 'data-clearable' => 'true',
+    ],
+]]);
+?>
 
 <div class="datalist-table datalist-freeze-3">
     <div class="uk-overflow-auto">
@@ -47,7 +59,7 @@ $this->element('Uikit.page_header', [
                     </td>
                     <td><?= h($state->id) ?></td>
                     <td><?= h($state->country?->nicename) ?></td>
-                    <td><?= h($state->name) ?></td>
+                    <td><?= $this->Html->link($state->name, ['controller' => 'Cities', 'action' => 'index', '?' => ['state_id' => $state->id]]) ?></td>
                     <td><?= h($state->state_code) ?></td>
                     <td><?= h($state->longitude) ?></td>
                     <td><?= h($state->latitude) ?></td>

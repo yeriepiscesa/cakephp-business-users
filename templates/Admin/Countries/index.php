@@ -46,7 +46,7 @@ $this->element('Uikit.page_header', [
                     </td>
                     <td><?= h($country->id) ?></td>
                     <td><?= h($country->iso) ?></td>
-                    <td><?= h($country->nicename) ?></td>
+                    <td><?= $this->Html->link($country->nicename, ['controller' => 'States', 'action' => 'index', '?' => ['country_id' => $country->id]]) ?></td>
                     <td><?= h($country->iso3) ?></td>
                     <td><?= h($country->phonecode) ?></td>
                 </tr>

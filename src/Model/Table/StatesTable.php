@@ -48,7 +48,8 @@ class StatesTable extends Table
                 'comparison' => 'LIKE',
                 'wildcardMode' => 'both',
                 'fields' => ['name', 'state_code'],
-            ]);
+            ])
+            ->add('country_id', 'Search.Value', ['fields' => 'States.country_id', 'filterEmpty' => true, 'multiValue' => true]);
 
         $this->belongsTo('Countries', [
             'className' => 'BusinessUsers.Countries',

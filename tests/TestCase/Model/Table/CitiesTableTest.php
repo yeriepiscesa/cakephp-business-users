@@ -11,6 +11,31 @@ use Cake\TestSuite\TestCase;
  */
 class CitiesTableTest extends TestCase
 {
+    public function testSearchFiltersByStateAndCountry(): void
+    {
+        $find = fn(array $filters) => $this->Cities->find('search', search: $filters)->count();
+
+        $this->assertSame(1, $find(['state_id' => '1', 'country_id' => '1']));
+        $this->assertSame(0, $find(['state_id' => '2']));
+        $this->assertSame(0, $find(['country_id' => '2']));
+        $this->assertSame(0, $find(['state_id' => '1', 'country_id' => '2']));
+        $this->assertSame(1, $find(['state_id' => '', 'country_id' => '']));
+        $this->assertSame(1, $find(['state_id' => ['1', '2'], 'country_id' => ['1', '2']]));
+        $this->assertSame(0, $find(['state_id' => ['2', '3']]));
+        $this->assertSame(0, $find(['country_id' => ['2', '3']]));
+        $this->assertSame(0, $find(['state_id' => ['1', '2'], 'country_id' => ['2', '3']]));
+    }
+
+    public function testSearchIncludesCitiesFromMultipleCountriesAndStates(): void
+    {
+        $connection = $this->Cities->getConnection();
+        $connection->insert('countries', ['id' => 2, 'iso' => 'US', 'name' => 'United States', 'nicename' => 'United States', 'iso3' => 'USA', 'numcode' => 2, 'phonecode' => 1]);
+        $connection->insert('states', ['id' => 2, 'country_id' => 2, 'name' => 'California', 'state_code' => 'CA']);
+        $connection->insert('cities', ['id' => 2, 'state_id' => 2, 'name' => 'Los Angeles']);
+
+        $this->assertSame(2, $this->Cities->find('search', search: ['state_id' => ['1', '2'], 'country_id' => ['1', '2']])->count());
+        $this->assertSame(1, $this->Cities->find('search', search: ['state_id' => ['1', '2'], 'country_id' => ['2']])->count());
+    }
     /**
      * Test subject
      *

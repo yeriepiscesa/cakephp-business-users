@@ -11,6 +11,24 @@ use Cake\TestSuite\TestCase;
  */
 class StatesTableTest extends TestCase
 {
+    public function testSearchFiltersByCountry(): void
+    {
+        $this->assertSame(1, $this->States->find('search', search: ['country_id' => '1'])->count());
+        $this->assertSame(0, $this->States->find('search', search: ['country_id' => '2'])->count());
+        $this->assertSame(1, $this->States->find('search', search: ['country_id' => ''])->count());
+        $this->assertSame(1, $this->States->find('search', search: ['country_id' => ['1', '2']])->count());
+        $this->assertSame(0, $this->States->find('search', search: ['country_id' => ['2', '3']])->count());
+    }
+
+    public function testSearchIncludesStatesFromMultipleCountries(): void
+    {
+        $connection = $this->States->getConnection();
+        $connection->insert('countries', ['id' => 2, 'iso' => 'US', 'name' => 'United States', 'nicename' => 'United States', 'iso3' => 'USA', 'numcode' => 2, 'phonecode' => 1]);
+        $connection->insert('states', ['id' => 2, 'country_id' => 2, 'name' => 'California', 'state_code' => 'CA']);
+
+        $this->assertSame(2, $this->States->find('search', search: ['country_id' => ['1', '2']])->count());
+        $this->assertSame(1, $this->States->find('search', search: ['country_id' => ['2']])->count());
+    }
     /**
      * Test subject
      *

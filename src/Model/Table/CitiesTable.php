@@ -49,6 +49,15 @@ class CitiesTable extends Table
                 'comparison' => 'LIKE',
                 'wildcardMode' => 'both',
                 'fields' => ['name'],
+            ])
+            ->add('state_id', 'Search.Value', ['fields' => 'Cities.state_id', 'filterEmpty' => true, 'multiValue' => true])
+            ->add('country_id', 'Search.Callback', [
+                'filterEmpty' => true,
+                'callback' => static function (SelectQuery $query, array $args): bool {
+                    $query->innerJoinWith('States')->where(['States.country_id IN' => (array)$args['country_id']]);
+
+                    return true;
+                },
             ]);
 
         $this->belongsTo('States', [
