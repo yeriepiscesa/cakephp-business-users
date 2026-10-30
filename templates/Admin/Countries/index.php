@@ -24,11 +24,11 @@ $this->element('Uikit.page_header', [
             <thead>
                 <tr>
                     <th class="uk-text-center">&nbsp;</th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', 'Id') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('iso', 'ISO') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('nicename', 'Name') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('iso3', 'ISO3') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('phonecode', 'Phone Code') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', __('Id')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('iso', __('ISO')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('nicename', __('Name')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('iso3', __('ISO3')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('phonecode', __('Phone Code')) ?></th>
                 </tr>
             </thead>
             <tbody>

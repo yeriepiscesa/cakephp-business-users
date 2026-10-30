@@ -43,12 +43,12 @@ echo $this->element('Uikit.table_controls', ['filters' => [
             <thead>
                 <tr>
                     <th class="uk-text-center">&nbsp;</th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', 'Id') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', __('Id')) ?></th>
                     <th class="uk-text-nowrap"><?= __('State') ?></th>
                     <th class="uk-text-nowrap"><?= __('Country') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('name', 'Name') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('latitude', 'Latitude') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('longitude', 'Longitude') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('name', __('Name')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('latitude', __('Latitude')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('longitude', __('Longitude')) ?></th>
                 </tr>
             </thead>
             <tbody>

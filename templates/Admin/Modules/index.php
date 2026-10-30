@@ -24,12 +24,12 @@ $this->element('Uikit.page_header', [
             <thead>
                 <tr>
                     <th class="uk-text-center">&nbsp;</th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', 'Id') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('name', 'Name') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('code', 'Code') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('is_active', 'Active') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('sort_order', 'Order') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('created', 'Created') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', __('Id')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('name', __('Name')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('code', __('Code')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('is_active', __('Active')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('sort_order', __('Order')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('created', __('Created')) ?></th>
                 </tr>
             </thead>
             <tbody>

@@ -24,12 +24,12 @@ $this->element('Uikit.page_header', [
             <thead>
                 <tr>
                     <th class="uk-text-center">&nbsp;</th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', 'Id') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('id', __('Id')) ?></th>
                     <th class="uk-text-nowrap"><?= __('Tenant') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('user_id', 'User') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('status', 'Status') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('is_owner', 'Owner') ?></th>
-                    <th class="uk-text-nowrap"><?= $this->Sort->column('joined', 'Joined') ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('user_id', __('User')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('status', __('Status')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('is_owner', __('Owner')) ?></th>
+                    <th class="uk-text-nowrap"><?= $this->Sort->column('joined', __('Joined')) ?></th>
                 </tr>
             </thead>
             <tbody>
