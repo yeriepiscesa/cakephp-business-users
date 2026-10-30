@@ -36,6 +36,16 @@ class ProfileTest extends TestCase
         $this->assertResponseContains('href="/admin/users/profile"');
     }
 
+    public function testAdminProfileUsesSelectedIndonesianLanguage(): void
+    {
+        $this->session(['App' => ['locale' => 'id_ID']]);
+        $this->get('/admin/users/profile');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Profil Saya');
+        $this->assertResponseContains('Nama Depan');
+        $this->assertResponseContains('Simpan perubahan');
+    }
+
     public function testProfileChangesOnlyAllowedFields(): void
     {
         $this->post('/admin/users/profile', [
