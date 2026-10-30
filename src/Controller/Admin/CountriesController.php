@@ -9,6 +9,8 @@ class CountriesController extends CrudController
 {
     protected ?string $defaultTable = 'BusinessUsers.Countries';
 
+    protected array $paginate = ['limit' => 25];
+
     public function initialize(): void
     {
         parent::initialize();

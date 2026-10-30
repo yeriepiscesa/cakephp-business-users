@@ -10,6 +10,8 @@ class StatesController extends CrudController
 {
     protected ?string $defaultTable = 'BusinessUsers.States';
 
+    protected array $paginate = ['limit' => 25];
+
     public function initialize(): void
     {
         parent::initialize();

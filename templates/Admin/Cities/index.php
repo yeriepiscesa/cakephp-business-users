@@ -21,7 +21,7 @@ $this->set('devScripts', ['resources/js/admin/lookup-select.js']);
 $this->set('prodScripts', ['admin/lookup-select.js']);
 $selectedCountries = $selectedCountries ?? [];
 $selectedStates = $selectedStates ?? [];
-echo $this->element('Uikit.table_controls', ['filters' => [
+echo $this->element('Uikit.table_controls', ['defaultLimit' => 25, 'filters' => [
     'country_id' => [
         'type' => 'select', 'label' => __('Country'), 'multiple' => true, 'class' => 'uk-select',
         'options' => $selectedCountries, 'value' => array_keys($selectedCountries), 'data-placeholder' => __('Search countries'),

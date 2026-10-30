@@ -10,6 +10,8 @@ class CitiesController extends CrudController
 {
     protected ?string $defaultTable = 'BusinessUsers.Cities';
 
+    protected array $paginate = ['limit' => 25];
+
     public function initialize(): void
     {
         parent::initialize();

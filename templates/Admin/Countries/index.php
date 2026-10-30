@@ -16,7 +16,7 @@ $this->element('Uikit.page_header', [
 ]);
 ?>
 
-<?= $this->element('Uikit.table_controls') ?>
+<?= $this->element('Uikit.table_controls', ['defaultLimit' => 25]) ?>
 
 <div class="datalist-table datalist-freeze-3">
     <div class="uk-overflow-auto">
