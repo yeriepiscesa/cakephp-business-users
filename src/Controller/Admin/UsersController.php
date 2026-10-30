@@ -27,6 +27,41 @@ use CakeDC\Users\Controller\UsersController as BaseUsersController;
  */
 class UsersController extends BaseUsersController
 {
+    public function profile($id = null)
+    {
+        $this->getRequest()->allowMethod(['get', 'post']);
+        $identity = $this->getRequest()->getAttribute('identity');
+        $userId = $identity?->getIdentifier();
+        if (!$userId || ($id !== null && (string)$id !== (string)$userId)) {
+            throw new \Cake\Http\Exception\ForbiddenException();
+        }
+        if (!$this->getRequest()->is('post')) {
+            return parent::profile($userId);
+        }
+
+        $response = parent::profile($userId);
+        if ($response !== null) {
+            return $response;
+        }
+
+        $user = $this->viewBuilder()->getVar('user');
+        $table = $this->getUsersTable();
+        $data = array_intersect_key($this->getRequest()->getData(), array_flip(['first_name', 'last_name']));
+        $table->patchEntity($user, $data, ['fields' => ['first_name', 'last_name']]);
+        if ($table->save($user)) {
+            if ($this->components()->has('Authentication')) {
+                $this->Authentication->setIdentity($user);
+            }
+            $this->Flash->success(__('Profile updated successfully.'));
+
+            return $this->redirect(['action' => 'profile']);
+        }
+
+        $this->Flash->error(__('Could not update your profile. Please check the form.'));
+
+        return null;
+    }
+
     public function __construct(
         ServerRequest $request,
         private readonly UserRoleProviderInterface $userRoleProvider,

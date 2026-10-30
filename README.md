@@ -784,3 +784,5 @@ php -l src/Controller/Api/V1/RolesController.php
 ## Profile photos
 
 Run `bin/cake migrations migrate --plugin BusinessUsers` after updating the plugin. Signed-in users can upload their own JPEG, PNG, or WebP profile photo (maximum 2 MB and 4000 × 4000 pixels) through `POST /users/avatar`. Photos are stored in `ROOT/data-files/BusinessUsers/avatars`, outside webroot, and served through authenticated `GET /users/avatar/{user-uuid}`. Make that directory writable by the PHP process. The theme may use the URL for member profile, admin profile, sidebar, and user lists.
+
+The admin profile at `/admin/users/profile` lets the signed-in user update their own first and last name and upload a photo with Uikit's image preview. Email and role remain read-only; changing an email requires a separate verified-email workflow. Profile edits cannot target another user.

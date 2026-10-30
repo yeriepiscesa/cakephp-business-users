@@ -31,6 +31,9 @@ class ProfilePhotosController extends AppController
         }
 
         $returnUrl = ['plugin' => 'CakeDC/Users', 'prefix' => false, 'controller' => 'Users', 'action' => 'profile'];
+        if ($this->getRequest()->getData('return_to') === 'admin') {
+            $returnUrl = ['plugin' => 'BusinessUsers', 'prefix' => 'Admin', 'controller' => 'Users', 'action' => 'profile'];
+        }
         $uploaded = $this->getRequest()->getData('avatar_file');
         if (!$uploaded instanceof UploadedFileInterface || $uploaded->getError() !== UPLOAD_ERR_OK) {
             $this->Flash->error(__('Please select an image to upload.'));

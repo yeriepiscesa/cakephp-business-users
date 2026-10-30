@@ -10,18 +10,28 @@
  */
 
 $this->assign('title', __d('cake_d_c/users', 'My Profile'));
+$this->set('devScripts', ['resources/js/admin/form.js']);
+$this->set('prodScripts', ['admin/form.js']);
+$avatarUrl = $this->Url->build(['plugin' => 'BusinessUsers', 'prefix' => false, 'controller' => 'ProfilePhotos', 'action' => 'view', $user->id]);
 ?>
 
 <div class="uk-grid" uk-grid>
     <div class="uk-width-medium">
         <div class="uk-card uk-card-default uk-text-center">
-            <div class="uk-card-media-top">
-                <?= $this->Html->image(
-                    empty($user->avatar) ? $avatarPlaceholder : $user->avatar,
-                    ['class' => 'uk-width-1-1']
-                ) ?>
-            </div>
             <div class="uk-card-body uk-padding-small">
+                <?php if ($isCurrentUser): ?>
+                    <?= $this->Form->create(null, ['type' => 'file', 'url' => ['plugin' => 'BusinessUsers', 'prefix' => false, 'controller' => 'ProfilePhotos', 'action' => 'upload'], 'class' => 'uk-form-stacked']) ?>
+                        <?= $this->Form->hidden('return_to', ['value' => 'admin']) ?>
+                        <?= $this->ImageUpload->control('avatar_file', [
+                            'label' => __('Profile photo'), 'width' => 140, 'height' => 140, 'shape' => 'circle',
+                            'currentImage' => $avatarUrl, 'showDeleteCheckbox' => false, 'required' => true,
+                            'accept' => 'image/jpeg,image/png,image/webp', 'help' => __('JPEG, PNG, or WebP; maximum 2 MB.'),
+                        ]) ?>
+                        <?= $this->Form->button(__('Upload photo'), ['class' => 'uk-button uk-button-default uk-width-1-1']) ?>
+                    <?= $this->Form->end() ?>
+                <?php else: ?>
+                    <?= $this->Html->image($avatarUrl, ['alt' => __('Profile photo'), 'class' => 'uk-border-circle', 'width' => 140, 'height' => 140]) ?>
+                <?php endif; ?>
                 <h3 class="uk-card-title">
                     <?= h(trim((string)$user->first_name . ' ' . (string)$user->last_name) ?: $user->email) ?>
                 </h3>
@@ -44,6 +54,15 @@ $this->assign('title', __d('cake_d_c/users', 'My Profile'));
             </div>
 
             <div class="uk-card-body">
+                <?php if ($isCurrentUser): ?>
+                <?= $this->Form->create($user, ['class' => 'uk-form-stacked', 'url' => ['action' => 'profile']]) ?>
+                    <p><strong><?= __d('cake_d_c/users', 'Email') ?>:</strong> <?= h($user->email) ?></p>
+                    <div class="uk-margin"><?= $this->Form->control('first_name', ['label' => __d('cake_d_c/users', 'First Name'), 'class' => 'uk-input']) ?></div>
+                    <div class="uk-margin"><?= $this->Form->control('last_name', ['label' => __d('cake_d_c/users', 'Last Name'), 'class' => 'uk-input']) ?></div>
+                    <p><strong><?= __d('cake_d_c/users', 'Role') ?>:</strong> <?= h($user->role) ?></p>
+                    <?= $this->Form->button(__('Save changes'), ['class' => 'uk-button uk-button-primary']) ?>
+                <?= $this->Form->end() ?>
+                <?php else: ?>
                 <div class="uk-grid-small uk-child-width-1-1" uk-grid>
                     <div>
                         <p><strong><?= __d('cake_d_c/users', 'Email') ?>:</strong></p>
@@ -65,6 +84,7 @@ $this->assign('title', __d('cake_d_c/users', 'My Profile'));
                         <p><?= h($user->role) ?></p>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
 

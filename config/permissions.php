@@ -57,6 +57,13 @@ return [
             'action' => ['upload', 'view'],
         ],
         [
+            'role' => '*',
+            'prefix' => 'Admin',
+            'plugin' => 'BusinessUsers',
+            'controller' => 'Users',
+            'action' => ['profile'],
+        ],
+        [
             'role' => \CakeDC\Users\Model\Table\UsersTable::ROLE_ADMIN,
             'prefix' => '*',
             'extension' => '*',
