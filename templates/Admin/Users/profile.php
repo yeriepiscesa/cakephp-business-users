@@ -16,21 +16,21 @@ $avatarUrl = $this->Url->build(['plugin' => 'BusinessUsers', 'prefix' => false, 
 ?>
 
 <div class="uk-grid" uk-grid>
-    <div class="uk-width-medium">
+    <div class="uk-width-1-1 uk-width-1-4@m">
         <div class="uk-card uk-card-default uk-text-center">
             <div class="uk-card-body uk-padding-small">
                 <?php if ($isCurrentUser): ?>
                     <?= $this->Form->create(null, ['type' => 'file', 'url' => ['plugin' => 'BusinessUsers', 'prefix' => false, 'controller' => 'ProfilePhotos', 'action' => 'upload'], 'class' => 'uk-form-stacked']) ?>
                         <?= $this->Form->hidden('return_to', ['value' => 'admin']) ?>
                         <?= $this->ImageUpload->control('avatar_file', [
-                            'label' => __('Profile photo'), 'width' => 140, 'height' => 140, 'shape' => 'circle',
+                            'label' => __('Profile photo'), 'width' => 180, 'height' => 180, 'shape' => 'circle', 'center' => true,
                             'currentImage' => $avatarUrl, 'showDeleteCheckbox' => false, 'required' => true,
                             'accept' => 'image/jpeg,image/png,image/webp', 'help' => __('JPEG, PNG, or WebP; maximum 2 MB.'),
                         ]) ?>
                         <?= $this->Form->button(__('Upload photo'), ['class' => 'uk-button uk-button-default uk-width-1-1']) ?>
                     <?= $this->Form->end() ?>
                 <?php else: ?>
-                    <?= $this->Html->image($avatarUrl, ['alt' => __('Profile photo'), 'class' => 'uk-border-circle', 'width' => 140, 'height' => 140]) ?>
+                    <?= $this->Html->image($avatarUrl, ['alt' => __('Profile photo'), 'class' => 'uk-border-circle', 'width' => 180, 'height' => 180]) ?>
                 <?php endif; ?>
                 <h3 class="uk-card-title">
                     <?= h(trim((string)$user->first_name . ' ' . (string)$user->last_name) ?: $user->email) ?>

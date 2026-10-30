@@ -34,6 +34,9 @@ class ProfileTest extends TestCase
         $this->assertResponseContains('name="avatar_file"');
         $this->assertResponseContains('/users/avatar');
         $this->assertResponseContains('href="/admin/users/profile"');
+        $this->assertResponseContains('<h4 class="admin-user-name uk-margin-remove"><a href="/admin/users/profile">');
+        $this->assertResponseContains(':style="containerStyle" class="uk-margin-auto"');
+        $this->assertResponseContains('&quot;width&quot;:180');
     }
 
     public function testAdminProfileUsesSelectedIndonesianLanguage(): void
